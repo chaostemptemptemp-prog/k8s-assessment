@@ -25,7 +25,7 @@ def test_check_balance():
     client = app.test_client()
     response = client.get("/balance")
     assert response.status_code == 200
-    assert response.get_json()["balance"] == 0
+    assert response.get_json()["balance"] == 250.0
 
 def test_deposit_success():
     client = app.test_client()
@@ -38,3 +38,23 @@ def test_deposit_invalid_amount():
     response = client.post("/deposit", json={"amount": -10})
     assert response.status_code == 400
     assert "greater than zero" in response.get_json()["error"]
+
+def test_withdraw_success():
+    app.balance = 200.0
+    client = app.test_client()
+    response = client.post("/withdraw", json={"amount": 50})
+    assert response.status_code == 200
+    assert response.get_json()["balance"] == 150.0
+
+def test_withdraw_invalid_amount():
+    client = app.test_client()
+    response = client.post("/withdraw", json={"amount": 0})
+    assert response.status_code == 400
+    assert "greater than zero" in response.get_json()["error"]
+
+def test_withdraw_insufficient_funds():
+    app.balance = 30.0
+    client = app.test_client()
+    response = client.post("/withdraw", json={"amount": 50})
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "Insufficient funds."
