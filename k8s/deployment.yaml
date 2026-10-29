@@ -2,20 +2,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: student-k8s-demo-1
+  name: k8s-asssessment
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: student-k8s-demo-1
+      app: k8s-asssessment
   template:
     metadata:
       labels:
-        app: student-k8s-demo-1
+        app: k8s-asssessment
     spec:
       containers:
         - name: student-k8s-demo
-          image: chaostemptemptemp/student-k8s-demo-1:2f9707017812c1410fb4a89ba836a3bf0315f665
+          image: chaostemptemptemp/k8s-asssessment:065460248ff042b88871157d4ba30c592fc446a5
           ports:
             - containerPort: 5000
           readinessProbe:
