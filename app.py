@@ -1,12 +1,11 @@
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
-
-balance = 0.0
+app.balance = 0.0
 
 @app.route("/")
 def home():
-    return jsonify(message="Simple Banking Application", balance=balance)
+    return jsonify(message="Simple Banking Application", balance=app.balance)
 
 @app.route("/health")
 def health():
@@ -14,12 +13,10 @@ def health():
 
 @app.route("/balance", methods=["GET"])
 def check_balance():
-    return jsonify(balance=balance), 200
+    return jsonify(balance=app.balance), 200
 
 @app.route("/deposit", methods=["POST"])
 def deposit():
-    global balance
-
     data = request.get_json(silent=True) or {}
     amount = data.get("amount")
 
@@ -34,13 +31,11 @@ def deposit():
     if amount <= 0:
         return jsonify(error="Deposit amount must be greater than zero."), 400
 
-    balance += amount
-    return jsonify(message="Deposit successful", balance=balance), 200
+    app.balance += amount
+    return jsonify(message="Deposit successful", balance=app.balance), 200
 
 @app.route("/withdraw", methods=["POST"])
 def withdraw():
-    global balance
-
     data = request.get_json(silent=True) or {}
     amount = data.get("amount")
 
@@ -55,11 +50,11 @@ def withdraw():
     if amount <= 0:
         return jsonify(error="Withdrawal amount must be greater than zero."), 400
 
-    if amount > balance:
+    if amount > app.balance:
         return jsonify(error="Insufficient funds."), 400
 
-    balance -= amount
-    return jsonify(message="Withdrawal successful", balance=balance), 200
+    app.balance -= amount
+    return jsonify(message="Withdrawal successful", balance=app.balance), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
